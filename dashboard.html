@@ -31,7 +31,7 @@
     .wallet-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
     .quick-pay-section { margin-bottom: 1.5rem; }
     .sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-    @media (max-width: 768px) { .sections-grid { grid-template-columns: 1fr; } .wallet-hero { flex-direction: column; text-align: center; } .wallet-actions { justify-content: center; } }
+    
     .approval-item { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2) !important; }
     .approval-item:hover { background: rgba(245,158,11,0.1) !important; }
     .tx-amount-pos { font-weight: 700; color: var(--accent-light); }
@@ -54,12 +54,12 @@
         <span class="logo-text">PayNexus</span>
       </a>
       <div class="nav-links">
-        <a href="dashboard.html" class="nav-link active" id="nav-dashboard">Dashboard</a>
-        <a href="groups.html" class="nav-link" id="nav-groups">Groups</a>
-        <a href="pay.html" class="nav-link" id="nav-pay">Pay</a>
-        <a href="approve.html" class="nav-link" id="nav-approve">Approvals</a>
-        <a href="analytics.html" class="nav-link" id="nav-analytics">Analytics</a>
-        <a href="receiver.html" class="nav-link" id="nav-receiver" style="display:none;">My Profile</a>
+        <a href="dashboard.html" class="nav-link active" id="nav-dashboard"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+        <a href="groups.html" class="nav-link" id="nav-groups"><i data-lucide="users"></i> <span>Groups</span></a>
+        <a href="pay.html" class="nav-link" id="nav-pay"><i data-lucide="send"></i> <span>Pay</span></a>
+        <a href="approve.html" class="nav-link" id="nav-approve"><i data-lucide="check-circle"></i> <span>Approvals</span></a>
+        <a href="analytics.html" class="nav-link" id="nav-analytics"><i data-lucide="pie-chart"></i> <span>Analytics</span></a>
+        <a href="receiver.html" class="nav-link" id="nav-receiver" style="display:none;"><i data-lucide="user"></i> <span>Profile</span></a>
       </div>
       <div class="nav-user">
         <button class="btn-icon" id="theme-toggle" title="Toggle Theme">??</button>
