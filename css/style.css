@@ -555,3 +555,54 @@ input[type="date"]::-webkit-calendar-picker-indicator:hover {
   background: radial-gradient(circle at top right, var(--primary-glow) 0%, transparent 70%);
   pointer-events: none; opacity: 0.5;
 }
+
+/* -- Responsive Mobile Enhancements -- */
+@media (max-width: 900px) {
+  .navbar { padding: 1rem 1.5rem; }
+  .nav-links { 
+    position: fixed; bottom: 0; left: 0; right: 0; 
+    background: var(--glass); backdrop-filter: saturate(180%) blur(40px); -webkit-backdrop-filter: saturate(180%) blur(40px);
+    border-top: 1px solid var(--glass-border);
+    padding: 0.75rem 1rem;
+    display: flex; justify-content: space-around; z-index: 100;
+  }
+  .nav-link { padding: 0.5rem; font-size: 0.75rem; display: flex; flex-direction: column; align-items: center; gap: 0.25rem; }
+  .nav-link i { font-size: 1.25rem; margin-bottom: 2px; }
+  body { padding-bottom: 70px; /* Space for bottom nav */ }
+}
+
+@media (max-width: 768px) {
+  /* Layout & Containers */
+  .container { padding: 0 1.25rem; }
+  .dash-grid, .method-grid, .stat-grid, .role-selector { grid-template-columns: 1fr; gap: 1rem; }
+  
+  /* Cards */
+  .card, .auth-card, .method-card, .approve-card, .approve-card-header, .approve-card-body { padding: 1.5rem; }
+  .wallet-hero { padding: 2rem 1.5rem; flex-direction: column; align-items: flex-start; gap: 1.5rem; }
+  
+  /* Typography */
+  .section-title, .auth-title { font-size: 1.75rem; }
+  .wallet-amount { font-size: 2.5rem; }
+  .stat-value { font-size: 1.8rem; }
+  
+  /* Modals */
+  .modal { padding: 2rem 1.5rem; border-radius: var(--radius-lg); }
+  
+  /* Landing */
+  .landing h1 { font-size: 2.2rem; }
+  
+  /* Buttons */
+  .wallet-actions { flex-direction: column; width: 100%; }
+  .wallet-actions .btn { width: 100%; justify-content: center; }
+  
+  .toast { min-width: 90%; right: 5%; bottom: 80px; }
+}
+
+@media (max-width: 480px) {
+  .navbar { padding: 0.75rem 1rem; }
+  .nav-logo .logo-text { display: none; }
+  .list-item { flex-direction: column; align-items: flex-start; gap: 1rem; }
+  .list-right { width: 100%; justify-content: space-between; }
+  .tab-bar { flex-direction: column; border-radius: var(--radius-md); }
+  .tab-btn { border-radius: var(--radius-sm); }
+}
