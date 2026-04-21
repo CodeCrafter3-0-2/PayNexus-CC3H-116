@@ -28,7 +28,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('btn-cancel-pin').addEventListener('click', () => {
     document.getElementById('pin-modal').style.display = 'none';
     document.getElementById('approve-pin-input').value = '';
-    document.getElementById('pin-error').textContent = '';
+    const errorEl = document.getElementById('pin-error');
+    errorEl.textContent = '';
+    errorEl.classList.remove('show');
     if (pendingApprovalBtn) {
       pendingApprovalBtn.innerHTML = pendingApprovalBtn.dataset.originalText;
       pendingApprovalBtn.disabled = false;
@@ -41,21 +43,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     if (pinInput.length !== 6) {
       errorEl.textContent = 'Please enter a 6-digit PIN.';
+      errorEl.classList.add('show');
       return;
     }
     
     // Check if the PIN matches the one in the user's profile
     if (currentProfile.transaction_pin && currentProfile.transaction_pin !== pinInput) {
       errorEl.textContent = 'Incorrect PIN. Please try again.';
+      errorEl.classList.add('show');
       return;
     } else if (!currentProfile.transaction_pin) {
       // In case they signed up before PIN was added or metadata didn't sync
       errorEl.textContent = 'No PIN found for this account. Please recreate your account.';
+      errorEl.classList.add('show');
       return;
     }
     
     // PIN is correct, close modal and execute approval
     errorEl.textContent = '';
+    errorEl.classList.remove('show');
     document.getElementById('pin-modal').style.display = 'none';
     document.getElementById('approve-pin-input').value = '';
     
