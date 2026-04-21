@@ -26,7 +26,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // PIN Modal Event Listeners
   document.getElementById('btn-cancel-pin').addEventListener('click', () => {
-    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('pin-modal').classList.remove('open');
     document.getElementById('approve-pin-input').value = '';
     const errorEl = document.getElementById('pin-error');
     errorEl.textContent = '';
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // PIN is correct, close modal and execute approval
     errorEl.textContent = '';
     errorEl.classList.remove('show');
-    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('pin-modal').classList.remove('open');
     document.getElementById('approve-pin-input').value = '';
     
     if (pendingApprovalParams) {
@@ -220,7 +220,7 @@ async function approveSplit(splitId, transactionId, amount) {
   pendingApprovalBtn = btn;
 
   // Show PIN modal
-  document.getElementById('pin-modal').style.display = 'flex';
+  document.getElementById('pin-modal').classList.add('open');
   document.getElementById('approve-pin-input').focus();
 }
 
