@@ -9,14 +9,16 @@
   <style>
     .main-content { padding: 1.5rem 0 4rem; }
     .wallet-hero {
-      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(16,185,129,0.15));
-      border: 1.5px solid rgba(124,58,237,0.3);
+      background: linear-gradient(135deg, rgba(94, 92, 230, 0.2), rgba(48, 209, 88, 0.15));
+      border: 1px solid rgba(94, 92, 230, 0.3);
       border-radius: var(--radius-xl);
-      padding: 2rem 2.5rem;
+      padding: 2.5rem 3rem;
       display: flex; align-items: center; justify-content: space-between;
-      gap: 2rem; margin-bottom: 1.5rem;
-      box-shadow: var(--shadow-glow-primary);
+      gap: 2rem; margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
       position: relative; overflow: hidden;
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
     }
     .wallet-hero::before {
       content: ''; position: absolute; inset: 0;

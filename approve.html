@@ -9,14 +9,17 @@
   <style>
     .main-content { padding: 1.5rem 0 4rem; }
     .approve-card {
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       border: 1px solid var(--glass-border);
       background: var(--glass);
-      border-radius: var(--radius-lg);
+      border-radius: var(--radius-xl);
       overflow: hidden;
-      transition: var(--transition);
+      backdrop-filter: saturate(180%) blur(24px);
+      -webkit-backdrop-filter: saturate(180%) blur(24px);
+      box-shadow: var(--shadow-md);
+      transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1), box-shadow 0.3s;
     }
-    .approve-card:hover { border-color: rgba(255,255,255,0.14); }
+    .approve-card:hover { transform: translateY(-3px); box-shadow: 0 20px 50px rgba(0,0,0,0.12), inset 0 1px 0 rgba(255,255,255,0.1); border-color: var(--primary-glow); }
     .approve-card-header {
       padding: 1.25rem 1.5rem;
       display: flex; align-items: center; justify-content: space-between;
