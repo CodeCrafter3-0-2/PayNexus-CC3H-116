@@ -109,10 +109,10 @@ ul { list-style: none; }
 }
 .nav-logo .logo-icon {
   width: 36px; height: 36px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
   display: flex; align-items: center; justify-content: center;
-  font-size: 1.1rem;
+  overflow: hidden; background: white;
 }
+.nav-logo .logo-icon img { width: 100%; height: 100%; object-fit: contain; }
 .nav-logo .logo-text { background: linear-gradient(90deg, var(--primary-light), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 .nav-links { display: flex; align-items: center; gap: 0.5rem; }
 .nav-link {
@@ -359,11 +359,11 @@ ul { list-style: none; }
 .auth-logo { text-align: center; margin-bottom: 2rem; }
 .auth-logo .logo-icon-large {
   width: 64px; height: 64px; border-radius: 18px;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
   display: flex; align-items: center; justify-content: center;
-  font-size: 2rem; margin: 0 auto 0.75rem;
+  margin: 0 auto 0.75rem; overflow: hidden; background: white;
   box-shadow: var(--shadow-glow-primary);
 }
+.auth-logo .logo-icon-large img { width: 100%; height: 100%; object-fit: contain; }
 .auth-title { font-size: 1.6rem; font-weight: 800; text-align: center; letter-spacing: -0.02em; }
 .auth-sub { font-size: 0.875rem; color: var(--text-400); text-align: center; margin-top: 0.25rem; }
 .auth-form { display: flex; flex-direction: column; gap: 1.1rem; margin-top: 2rem; }
