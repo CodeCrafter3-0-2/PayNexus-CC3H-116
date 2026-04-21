@@ -2,8 +2,7 @@
 
 PayNexus is an ultra-premium, mobile-first payment management platform designed with a sophisticated, Apple-inspired aesthetic. It provides a seamless experience for tracking analytics, managing groups, and processing payments with a focus on high-end UI/UX.
 
-![PayNexus Banner](https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&q=80&w=2070)
-
+Live Deployed at : https://paynexus01.vercel.app/
 ## ✨ Features
 
 - **Ultra-Premium Design**: A "machined" glassmorphism aesthetic with metallic typography and smooth micro-interactions.
