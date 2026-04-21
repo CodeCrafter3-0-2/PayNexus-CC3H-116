@@ -92,14 +92,76 @@ async function onGroupChange() {
   updateSplitPreview();
 }
 
+let html5QrCode = null;
+
 function selectMethod(method) {
   selectedMethod = method;
   document.getElementById('method-phone').classList.toggle('active', method === 'phone');
   document.getElementById('method-qr').classList.toggle('active', method === 'qr');
   document.getElementById('phone-input-section').style.display = method === 'phone' ? 'flex' : 'none';
   document.getElementById('qr-input-section').style.display = method === 'qr' ? 'block' : 'none';
+  
+  // Stop scanner if switching away
+  if (method !== 'qr' && html5QrCode && html5QrCode.isScanning) {
+    stopScanner();
+  }
+
   receiverProfile = null;
   document.getElementById('receiver-preview').classList.remove('show');
+}
+
+async function toggleScanner() {
+  const btn = document.getElementById('btn-toggle-scanner');
+  if (html5QrCode && html5QrCode.isScanning) {
+    await stopScanner();
+    btn.innerHTML = '<i data-lucide="camera" style="width:18px;height:18px;margin-right:8px;"></i> Start Camera Scanner';
+    lucide.createIcons();
+  } else {
+    await startScanner();
+    btn.innerHTML = '<i data-lucide="square" style="width:18px;height:18px;margin-right:8px;"></i> Stop Camera Scanner';
+    lucide.createIcons();
+  }
+}
+
+async function startScanner() {
+  if (!html5QrCode) {
+    html5QrCode = new Html5Qrcode("reader");
+  }
+
+  const qrConfig = { fps: 10, qrbox: { width: 250, height: 250 } };
+
+  try {
+    document.getElementById('scan-status').textContent = 'Requesting camera permission...';
+    await html5QrCode.start(
+      { facingMode: "environment" }, 
+      qrConfig,
+      onScanSuccess
+    );
+    document.getElementById('scan-status').textContent = 'Scanner Active: Point at a PayNexus QR code';
+  } catch (err) {
+    console.error(err);
+    document.getElementById('scan-status').textContent = 'Camera error: ' + err;
+    showToast('Could not access camera. Please check permissions.', 'error');
+  }
+}
+
+async function stopScanner() {
+  if (html5QrCode && html5QrCode.isScanning) {
+    await html5QrCode.stop();
+    document.getElementById('scan-status').textContent = 'Scanner Stopped';
+  }
+}
+
+function onScanSuccess(decodedText, decodedResult) {
+  // Assuming the QR code contains the User ID / QR ID
+  document.getElementById('receiver-qr-id').value = decodedText;
+  stopScanner();
+  
+  const btn = document.getElementById('btn-toggle-scanner');
+  btn.innerHTML = '<i data-lucide="camera" style="width:18px;height:18px;margin-right:8px;"></i> Start Camera Scanner';
+  lucide.createIcons();
+  
+  lookupByQR();
 }
 
 let lookupTimeout;
@@ -279,3 +341,4 @@ window.lookupReceiver = lookupReceiver;
 window.lookupByQR = lookupByQR;
 window.updateSplitPreview = updateSplitPreview;
 window.initiatePayment = initiatePayment;
+window.toggleScanner = toggleScanner;

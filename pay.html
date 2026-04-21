@@ -25,9 +25,17 @@
     .split-preview.show { display: block; }
     .split-row { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0; font-size: .875rem; }
     .split-total { border-top: 1px solid var(--glass-border); padding-top: .75rem; margin-top: .5rem; }
-    .qr-preview-area { text-align: center; padding: 1.5rem; }
+    .qr-preview-area { text-align: center; padding: 1rem; }
     .scan-status { font-size: .875rem; margin-top: 1rem; color: var(--text-400); }
     .wallet-info { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: .75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+    
+    /* QR Scanner Styling */
+    #reader { border: none !important; box-shadow: 0 0 20px rgba(0,0,0,0.2); }
+    #reader video { border-radius: var(--radius-md); }
+    #reader__dashboard { background: var(--glass-dark); border-top: 1px solid var(--glass-border); padding: 1rem !important; }
+    #reader__status_span { color: var(--text-400); font-size: 0.8rem; }
+    #reader__camera_selection { background: var(--glass); color: var(--text-200); border: 1px solid var(--glass-border); border-radius: 4px; padding: 4px; }
+    #reader button { display: none; } /* Hide default library buttons in favor of our custom toggle */
 
     @media (max-width: 768px) {
       .pay-layout { display: flex !important; flex-direction: column !important; }
@@ -122,23 +130,28 @@
             </div>
           </div>
 
-          <!-- QR Input Section -->
-          <div id="qr-input-section" style="display:none;" class="pay-form">
-            <div class="qr-preview-area">
-              <div class="scan-container scan-corners">
-                <div class="scan-line"></div>
-                <div class="scan-icon">📷</div>
-              </div>
-              <div class="scan-status">Enter a PayNexus User ID below to simulate QR scan</div>
-              <div class="form-group" style="margin-top:1rem;text-align:left;">
-                <label class="form-label">Receiver User ID (simulated QR)</label>
-                <div style="display:flex;gap:.5rem;">
-                  <input type="text" id="receiver-qr-id" class="form-control" placeholder="Paste User ID / QR code" />
-                  <button class="btn btn-outline" onclick="lookupByQR()" style="flex-shrink:0;min-width:80px;">Scan</button>
-                </div>
-              </div>
-            </div>
-          </div>
+  <!-- QR Input Section -->
+  <div id="qr-input-section" style="display:none;" class="pay-form">
+    <div class="qr-preview-area">
+      <div id="reader" style="width: 100%; border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--glass-border);"></div>
+      <div id="scanner-controls" style="margin-top: 1rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        <button class="btn btn-outline btn-full" id="btn-toggle-scanner" onclick="toggleScanner()">
+          <i data-lucide="camera" style="width:18px;height:18px;margin-right:8px;"></i> Start Camera Scanner
+        </button>
+        <div class="scan-status" id="scan-status">Scan a PayNexus QR code to automatically fill receiver details</div>
+      </div>
+      
+      <div class="divider" style="margin: 1.5rem 0;"><span>OR ENTER MANUALLY</span></div>
+      
+      <div class="form-group" style="text-align:left;">
+        <label class="form-label">Receiver User ID (Manual)</label>
+        <div style="display:flex;gap:.5rem;">
+          <input type="text" id="receiver-qr-id" class="form-control" placeholder="Paste User ID / QR code" />
+          <button class="btn btn-outline" onclick="lookupByQR()" style="flex-shrink:0;min-width:80px;">Verify</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
           <!-- Receiver Preview -->
           <div class="receiver-preview" id="receiver-preview">
@@ -220,6 +233,7 @@
   <div id="toast-container"></div>
   <script src="js/theme.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/html5-qrcode"></script>
   <script src="js/supabase.js"></script>
   <script src="js/pay.js"></script>
   <script>lucide.createIcons();</script>
