@@ -4,6 +4,8 @@
 
 let currentProfile = null;
 let currentTab = 'pending';
+let pendingApprovalParams = null;
+let pendingApprovalBtn = null;
 
 document.addEventListener('DOMContentLoaded', async () => {
   const session = await requireAuth();
@@ -21,6 +23,46 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   await loadPendingSplits();
+
+  // PIN Modal Event Listeners
+  document.getElementById('btn-cancel-pin').addEventListener('click', () => {
+    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('approve-pin-input').value = '';
+    document.getElementById('pin-error').textContent = '';
+    if (pendingApprovalBtn) {
+      pendingApprovalBtn.innerHTML = pendingApprovalBtn.dataset.originalText;
+      pendingApprovalBtn.disabled = false;
+    }
+  });
+
+  document.getElementById('btn-submit-pin').addEventListener('click', async () => {
+    const pinInput = document.getElementById('approve-pin-input').value;
+    const errorEl = document.getElementById('pin-error');
+    
+    if (pinInput.length !== 6) {
+      errorEl.textContent = 'Please enter a 6-digit PIN.';
+      return;
+    }
+    
+    // Check if the PIN matches the one in the user's profile
+    if (currentProfile.transaction_pin && currentProfile.transaction_pin !== pinInput) {
+      errorEl.textContent = 'Incorrect PIN. Please try again.';
+      return;
+    } else if (!currentProfile.transaction_pin) {
+      // In case they signed up before PIN was added or metadata didn't sync
+      errorEl.textContent = 'No PIN found for this account. Please recreate your account.';
+      return;
+    }
+    
+    // PIN is correct, close modal and execute approval
+    errorEl.textContent = '';
+    document.getElementById('pin-modal').style.display = 'none';
+    document.getElementById('approve-pin-input').value = '';
+    
+    if (pendingApprovalParams) {
+      await executeApproveSplit(pendingApprovalParams.splitId, pendingApprovalParams.transactionId, pendingApprovalParams.amount);
+    }
+  });
 });
 
 function switchTab(tab) {
@@ -160,7 +202,24 @@ async function loadPendingSplits() {
 
 async function approveSplit(splitId, transactionId, amount) {
   const btn = event.target;
-  btn.innerHTML = '<span class="spinner"></span>'; btn.disabled = true;
+  // Save original text to restore if cancelled
+  if (!btn.dataset.originalText) {
+    btn.dataset.originalText = btn.innerHTML;
+  }
+  btn.innerHTML = '<span class="spinner"></span>'; 
+  btn.disabled = true;
+
+  // Store params and button reference
+  pendingApprovalParams = { splitId, transactionId, amount };
+  pendingApprovalBtn = btn;
+
+  // Show PIN modal
+  document.getElementById('pin-modal').style.display = 'flex';
+  document.getElementById('approve-pin-input').focus();
+}
+
+async function executeApproveSplit(splitId, transactionId, amount) {
+  const btn = pendingApprovalBtn;
 
   // 1. Call Secure RPC to handle EVERYTHING
   const { error } = await supabaseClient.rpc('approve_split', { split_id: splitId });

@@ -88,6 +88,11 @@
               </div>
               <span class="strength-text" id="strength-label">Security: Too short</span>
             </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-pin">Transaction PIN (6 digits)</label>
+              <input type="password" id="signup-pin" class="form-control" placeholder="••••••" required pattern="[0-9]{6}" maxlength="6" inputmode="numeric" />
+              <div style="font-size: 0.8rem; color: var(--text-400); margin-top: 0.25rem;">This PIN will be required to approve transactions.</div>
+            </div>
             <div class="form-error" id="signup-error"></div>
             <button type="submit" class="btn btn-primary btn-full" id="btn-signup">Create Account</button>
           </form>

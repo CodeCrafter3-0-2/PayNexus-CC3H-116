@@ -152,6 +152,7 @@ async function handleSignup(e) {
     const phoneRaw = document.getElementById('signup-phone').value.trim();
     const phone = phoneCode + phoneRaw;
     const password = document.getElementById('signup-password').value;
+    const transactionPin = document.getElementById('signup-pin').value;
 
     // Check phone unique
     const { data: existing, error: findErr } = await supabaseClient.from('profiles').select('id').eq('phone', phone).maybeSingle();
@@ -168,7 +169,7 @@ async function handleSignup(e) {
 
     const { data, error } = await supabaseClient.auth.signUp({
       email, password,
-      options: { data: { full_name: name, phone } }
+      options: { data: { full_name: name, phone, transaction_pin: transactionPin } }
     });
 
     if (error) {
