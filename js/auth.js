@@ -3,6 +3,10 @@
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', () => {  // Toggle forms
+  // Form Switching
+  document.getElementById('switch-to-signup').addEventListener('click', e => { e.preventDefault(); showSignup(); });
+  document.getElementById('switch-to-login').addEventListener('click', e => { e.preventDefault(); showLogin(); });
+  
   // Forgot Password Toggle
   document.getElementById('link-forgot').addEventListener('click', e => { e.preventDefault(); showForgot(); });
   document.getElementById('back-to-login').addEventListener('click', e => { e.preventDefault(); showLogin(); });
