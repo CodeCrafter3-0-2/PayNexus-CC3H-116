@@ -9,7 +9,7 @@
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
   <style>
     /* ── Analytics Layout ── */
-    .analytics-content { padding: 1.5rem 0 5rem; }
+    .analytics-content { padding-top: 1.5rem; padding-bottom: 5.5rem; }
 
     /* Live Indicator */
     .live-badge {
@@ -219,9 +219,9 @@
       </a>
       <div class="nav-links">
         <a href="dashboard.html" class="nav-link" id="nav-dashboard"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
-        <a href="groups.html"    class="nav-link" id="nav-groups">Groups</a>
-        <a href="pay.html"       class="nav-link" id="nav-pay">Pay</a>
-        <a href="approve.html"   class="nav-link" id="nav-approve">Approvals</a>
+        <a href="groups.html" class="nav-link" id="nav-groups"><i data-lucide="users"></i> <span>Groups</span></a>
+        <a href="pay.html" class="nav-link" id="nav-pay"><i data-lucide="send"></i> <span>Pay</span></a>
+        <a href="approve.html" class="nav-link" id="nav-approve"><i data-lucide="check-circle"></i> <span>Approvals</span></a>
         <a href="analytics.html" class="nav-link active" id="nav-analytics"><i data-lucide="pie-chart"></i> <span>Analytics</span></a>
       </div>
       <div class="nav-user">
@@ -412,5 +412,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/analytics.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

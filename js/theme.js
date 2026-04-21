@@ -2,14 +2,26 @@ document.addEventListener('DOMContentLoaded', () => {
   // Theme logic
   const savedTheme = localStorage.getItem('theme') || 'dark';
   document.documentElement.setAttribute('data-theme', savedTheme);
-  
+
   const themeToggle = document.getElementById('theme-toggle');
+
+  function updateThemeIcon(theme) {
+    if (themeToggle) {
+      themeToggle.textContent = theme === 'light' ? '🌙' : '☀️';
+      themeToggle.title = theme === 'light' ? 'Switch to Dark Mode' : 'Switch to Light Mode';
+    }
+  }
+
+  // Set icon immediately (removes ?? placeholder)
+  updateThemeIcon(savedTheme);
+
   if (themeToggle) {
     themeToggle.addEventListener('click', () => {
       const currentTheme = document.documentElement.getAttribute('data-theme');
       const newTheme = currentTheme === 'light' ? 'dark' : 'light';
       document.documentElement.setAttribute('data-theme', newTheme);
       localStorage.setItem('theme', newTheme);
+      updateThemeIcon(newTheme);
       if (window.lucide) { window.lucide.createIcons(); }
     });
   }
@@ -27,3 +39,4 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.insertBefore(orbs, document.body.firstChild);
   }
 });
+

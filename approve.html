@@ -6,8 +6,9 @@
   <title>PayNexus — Approve Payments</title>
   <meta name="description" content="Approve or reject your pending split payment charges." />
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .main-content { padding: 1.5rem 0 4rem; }
+    .main-content { padding-top: 1.5rem; padding-bottom: 5.5rem; }
     .approve-card {
       margin-bottom: 1.5rem;
       border: 1px solid var(--glass-border);
@@ -26,7 +27,7 @@
       gap: 1rem; border-bottom: 1px solid var(--glass-border);
     }
     .approve-card-body { padding: 1.25rem 1.5rem; }
-    .approve-amount { font-size: 2rem; font-weight: 900; letter-spacing: -0.03em; }
+    .approve-amount { font-size: clamp(1.5rem, 6vw, 2rem); font-weight: 900; letter-spacing: -0.03em; }
     .approve-actions { display: flex; gap: .75rem; margin-top: 1rem; }
     .split-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .75rem; margin-bottom: 1rem; }
     .split-info-item { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: .6rem .9rem; }
@@ -34,19 +35,31 @@
     .split-info-value { font-size: .95rem; font-weight: 700; margin-top: .15rem; }
     .members-split { display: flex; flex-direction: column; gap: .4rem; }
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+
+    @media (max-width: 768px) {
+      .approve-card-header { flex-wrap: wrap; }
+      .approve-actions { display: grid !important; grid-template-columns: 1fr 1fr !important; gap: 0.5rem; }
+      .approve-actions .btn { justify-content: center; }
+      .split-info { grid-template-columns: 1fr 1fr !important; }
+      .main-content { padding-top: 1rem; padding-bottom: 5.5rem; }
+    }
+    @media (max-width: 480px) {
+      .approve-card-header { padding: 1rem !important; }
+      .approve-card-body { padding: 1rem !important; }
+    }
   </style>
 </head>
 <body>
   <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
   <div class="page-wrapper">
     <nav class="navbar">
-      <a href="index.html" class="nav-logo"><div class="logo-icon">💸</div><span class="logo-text">PayNexus</span></a>
+      <a href="index.html" class="nav-logo"><div class="logo-icon"><img src="https://i.postimg.cc/dQ6H8VTb/Chat-GPT-Image-Apr-22-2026-02-25-57-AM-photoaidcom-cropped.png" alt="PayNexus" style="width:100%;height:100%;object-fit:contain;" /></div><span class="logo-text">PayNexus</span></a>
       <div class="nav-links">
-        <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="groups.html" class="nav-link">Groups</a>
+        <a href="dashboard.html" class="nav-link" id="nav-dashboard"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+        <a href="groups.html" class="nav-link" id="nav-groups"><i data-lucide="users"></i> <span>Groups</span></a>
         <a href="pay.html" class="nav-link" id="nav-pay"><i data-lucide="send"></i> <span>Pay</span></a>
-        <a href="approve.html" class="nav-link active">Approvals</a>
-        <a href="analytics.html" class="nav-link">Analytics</a>
+        <a href="approve.html" class="nav-link active" id="nav-approve"><i data-lucide="check-circle"></i> <span>Approvals</span></a>
+        <a href="analytics.html" class="nav-link" id="nav-analytics"><i data-lucide="pie-chart"></i> <span>Analytics</span></a>
       </div>
       <div class="nav-user">
         <button class="btn-icon" id="theme-toggle" title="Toggle Theme">??</button>
@@ -79,6 +92,7 @@
         </div>
       </div>
 
+      <!-- All Transactions Tab Content -->
       <div id="tab-all-content" style="display:none;">
         <div id="all-tx-list">
           <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
@@ -106,5 +120,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/approve.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

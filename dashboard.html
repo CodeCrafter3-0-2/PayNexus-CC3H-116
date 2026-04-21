@@ -6,17 +6,19 @@
   <title>PayNexus — Dashboard</title>
   <meta name="description" content="Your PayNexus dashboard — wallet, groups, and pending approvals." />
   <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .main-content { padding: 1.5rem 0 4rem; }
+    .main-content { padding-top: 1.5rem; padding-bottom: 5.5rem; }
     .wallet-hero {
       background: linear-gradient(135deg, rgba(94, 92, 230, 0.2), rgba(48, 209, 88, 0.15));
       border: 1px solid rgba(94, 92, 230, 0.3);
       border-radius: var(--radius-xl);
-      padding: 2.5rem 3rem;
+      padding: clamp(1.25rem, 4vw, 2.5rem) clamp(1.25rem, 5vw, 3rem);
       display: flex; align-items: center; justify-content: space-between;
-      gap: 2rem; margin-bottom: 2rem;
+      gap: 1.5rem; margin-bottom: 1.5rem;
       box-shadow: 0 20px 40px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.1);
       position: relative; overflow: hidden;
+      width: 100%; box-sizing: border-box;
       backdrop-filter: saturate(180%) blur(24px);
       -webkit-backdrop-filter: saturate(180%) blur(24px);
     }
@@ -26,7 +28,7 @@
       pointer-events: none;
     }
     .wallet-label { font-size: 0.8rem; font-weight: 600; color: var(--text-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
-    .wallet-amount { font-size: 3rem; font-weight: 900; letter-spacing: -0.04em; background: linear-gradient(90deg, #fff, var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .wallet-amount { font-size: clamp(2rem, 8vw, 3rem); font-weight: 900; letter-spacing: -0.04em; background: linear-gradient(90deg, #fff, var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
     .wallet-currency { font-size: 1.5rem; }
     .wallet-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
     .quick-pay-section { margin-bottom: 1.5rem; }
@@ -38,7 +40,36 @@
     .tx-amount-neg { font-weight: 700; color: var(--danger-light); }
     .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
     .section-header .section-title { margin-bottom: 0; }
+
+    /* ── Dashboard mobile overrides ── */
+    @media (max-width: 768px) {
+      .wallet-hero {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 1rem;
+        padding: 1.25rem !important;
+        margin-bottom: 1rem !important;
+      }
+      .wallet-actions {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        width: 100%;
+        gap: 0.75rem;
+      }
+      .wallet-actions .btn { justify-content: center; min-width: 0; }
+      /* 3rd button (My QR Code) spans full width */
+      .wallet-actions .btn:last-child:nth-child(odd),
+      .wallet-actions .btn:only-child { grid-column: 1 / -1; }
+      .sections-grid { grid-template-columns: 1fr !important; gap: 0.875rem !important; }
+      .quick-pay-section { margin-bottom: 1rem; }
+      .stat-grid { gap: 0.875rem !important; margin-bottom: 1rem !important; }
+    }
+    @media (max-width: 480px) {
+      .wallet-hero { padding: 1rem !important; }
+      .wallet-amount { font-size: 1.9rem !important; }
+    }
   </style>
+
 </head>
 <body>
   <div class="bg-orbs">
@@ -50,7 +81,7 @@
     <!-- Navbar -->
     <nav class="navbar">
       <a href="index.html" class="nav-logo">
-        <div class="logo-icon">💸</div>
+        <div class="logo-icon"><img src="https://i.postimg.cc/dQ6H8VTb/Chat-GPT-Image-Apr-22-2026-02-25-57-AM-photoaidcom-cropped.png" alt="PayNexus" style="width:100%;height:100%;object-fit:contain;" /></div>
         <span class="logo-text">PayNexus</span>
       </a>
       <div class="nav-links">
@@ -190,5 +221,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/dashboard.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>

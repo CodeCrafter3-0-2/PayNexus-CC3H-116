@@ -8,8 +8,9 @@
   <link rel="stylesheet" href="css/style.css" />
   <!-- QRCode.js for generating QR codes -->
   <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
   <style>
-    .main-content { padding: 1.5rem 0 4rem; }
+    .main-content { padding-top: 1.5rem; padding-bottom: 5.5rem; }
     .receiver-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
     
     .profile-hero {
@@ -35,6 +36,11 @@
     .info-row { display: flex; align-items: center; justify-content: space-between; padding: .75rem 1rem; background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); margin-bottom: .5rem; }
     .info-row-label { font-size: .78rem; color: var(--text-400); font-weight: 600; text-transform: uppercase; letter-spacing: .06em; }
     .info-row-value { font-weight: 600; font-size: .9rem; }
+
+    @media (max-width: 768px) {
+      .receiver-layout { display: flex !important; flex-direction: column !important; }
+      .main-content { padding: 1rem 0 5rem; }
+    }
   </style>
 </head>
 <body>
@@ -43,9 +49,11 @@
     <nav class="navbar">
       <a href="index.html" class="nav-logo"><div class="logo-icon">💸</div><span class="logo-text">PayNexus</span></a>
       <div class="nav-links">
-        <a href="dashboard.html" class="nav-link">Dashboard</a>
-        <a href="approve.html" class="nav-link">Transactions</a>
-        <a href="receiver.html" class="nav-link active">My QR Code</a>
+        <a href="dashboard.html" class="nav-link" id="nav-dashboard"><i data-lucide="layout-dashboard"></i> <span>Dashboard</span></a>
+        <a href="groups.html" class="nav-link" id="nav-groups"><i data-lucide="users"></i> <span>Groups</span></a>
+        <a href="pay.html" class="nav-link" id="nav-pay"><i data-lucide="send"></i> <span>Pay</span></a>
+        <a href="approve.html" class="nav-link" id="nav-approve"><i data-lucide="check-circle"></i> <span>Approvals</span></a>
+        <a href="receiver.html" class="nav-link active" id="nav-receiver"><i data-lucide="user"></i> <span>Profile</span></a>
       </div>
       <div class="nav-user">
         <button class="btn-icon" id="theme-toggle" title="Toggle Theme">??</button>
@@ -133,5 +141,6 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/supabase.js"></script>
   <script src="js/receiver.js"></script>
+  <script>lucide.createIcons();</script>
 </body>
 </html>
