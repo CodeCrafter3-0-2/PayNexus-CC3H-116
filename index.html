@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Split Payments, Simplified</title>
+  <meta name="description" content="PayNexus lets you group up with friends and split payments seamlessly. Pay smarter, together." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    .landing { min-height: 100vh; display: grid; place-items: center; text-align: center; padding: 2rem; }
+    .landing-logo { width: 80px; height: 80px; border-radius: 24px; background: linear-gradient(135deg, var(--primary), var(--accent)); display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 1.5rem; box-shadow: var(--shadow-glow-primary); }
+    .landing h1 { font-size: clamp(2.5rem,6vw,4.5rem); font-weight: 900; letter-spacing: -0.04em; line-height: 1.1; margin-bottom: 1rem; }
+    .landing h1 span { background: linear-gradient(90deg, var(--primary-light), var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .landing p { font-size: 1.1rem; color: var(--text-400); max-width: 480px; margin: 0 auto 2.5rem; }
+    .landing-btns { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+    .features { display: flex; gap: 1.5rem; justify-content: center; flex-wrap: wrap; margin-top: 4rem; }
+    .feature { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-lg); padding: 1.5rem; max-width: 200px; text-align: center; }
+    .feature-icon { font-size: 2rem; margin-bottom: 0.75rem; }
+    .feature-title { font-weight: 700; font-size: 0.9rem; margin-bottom: 0.3rem; }
+    .feature-desc { font-size: 0.78rem; color: var(--text-400); }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="page-wrapper">
+    <div class="landing">
+      <div class="fade-in">
+        <div class="landing-logo"><i data-lucide="banknote"></i></div>
+        <h1>Pay Together,<br /><span>Split Smart</span></h1>
+        <p>Group up with friends, initiate payments, and let PayNexus handle the split — automatically, fairly, instantly.</p>
+        <div class="landing-btns">
+          <a href="login.html?mode=signup" class="btn btn-primary" id="btn-get-started">Sign Up</a>
+          <a href="login.html?mode=login" class="btn btn-outline" id="btn-signin">Sign In</a>
+        </div>
+        <div class="features">
+          <div class="feature fade-in fade-in-delay-1">
+            <div class="feature-icon-svg"><i data-lucide="users"></i></div>
+            <div class="feature-title">Group Payments</div>
+            <div class="feature-desc">Add friends and split any bill automatically</div>
+          </div>
+          <div class="feature fade-in fade-in-delay-2">
+            <div class="feature-icon-svg"><i data-lucide="qr-code"></i></div>
+            <div class="feature-title">Pay via QR or Phone</div>
+            <div class="feature-desc">Practice payments in a risk-free sandbox</div>
+          </div>
+          <div class="feature fade-in fade-in-delay-3">
+            <div class="feature-icon-svg"><i data-lucide="check-circle"></i></div>
+            <div class="feature-title">Approval Flow</div>
+            <div class="feature-desc">Everyone approves their share before it goes through</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <main class="container">
+      <!-- Content could go here -->
+    </main>
+    <footer class="footer">
+      <div class="footer-text">PayNexus &copy; 2026. All rights reserved.</div>
+      <div style="font-size:0.75rem;margin-top:0.5rem;opacity:0.6;">Built for the future of group finance.</div>
+    </footer>
+  </div>
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script>
+    (async () => {
+      lucide.createIcons();
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session) window.location.href = 'dashboard.html';
+    })();
+  </script>
+</body>
+</html>

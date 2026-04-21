@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Make Payment</title>
+  <meta name="description" content="Initiate a split payment with your group via phone number or QR scanner." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .main-content { padding: 1.5rem 0 4rem; }
+    .pay-layout { display: grid; grid-template-columns: 1.2fr 1fr; gap: 1.5rem; }
+    @media (max-width: 900px) { .pay-layout { grid-template-columns: 1fr; } }
+    .method-selector { margin-bottom: 1.25rem; }
+    .pay-form { display: flex; flex-direction: column; gap: 1rem; }
+    .receiver-preview {
+      background: rgba(16,185,129,0.08); border: 1px solid rgba(16,185,129,0.2);
+      border-radius: var(--radius-md); padding: 1rem; display: none;
+    }
+    .receiver-preview.show { display: flex; align-items: center; gap: .75rem; }
+    .split-preview {
+      background: rgba(124,58,237,0.08); border: 1px solid rgba(124,58,237,0.2);
+      border-radius: var(--radius-md); padding: 1rem; display: none;
+    }
+    .split-preview.show { display: block; }
+    .split-row { display: flex; justify-content: space-between; align-items: center; padding: .4rem 0; font-size: .875rem; }
+    .split-total { border-top: 1px solid var(--glass-border); padding-top: .75rem; margin-top: .5rem; }
+    .qr-preview-area { text-align: center; padding: 1.5rem; }
+    .scan-status { font-size: .875rem; margin-top: 1rem; color: var(--text-400); }
+    .wallet-info { background: var(--glass); border: 1px solid var(--glass-border); border-radius: var(--radius-md); padding: .75rem 1rem; display: flex; align-items: center; justify-content: space-between; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <div class="page-wrapper">
+    <nav class="navbar">
+      <a href="index.html" class="nav-logo"><div class="logo-icon">💸</div><span class="logo-text">PayNexus</span></a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="groups.html" class="nav-link">Groups</a>
+        <a href="pay.html" class="nav-link active">Pay</a>
+        <a href="approve.html" class="nav-link">Approvals</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+      </div>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <button class="btn-logout" id="btn-logout">Logout</button>
+      </div>
+    </nav>
+
+    <div class="container main-content">
+      <div class="page-header">
+        <h1 class="section-title">💸 Make a Payment</h1>
+        <p class="section-sub">Pay via phone number or QR scan — your group splits the bill automatically</p>
+      </div>
+
+      <div class="pay-layout">
+        <!-- Left: Form -->
+        <div class="card fade-in">
+          <!-- Wallet Balance -->
+          <div class="wallet-info" style="margin-bottom:1.25rem;">
+            <div>
+              <div style="font-size:.72rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-400);font-weight:600;">Your Balance</div>
+              <div style="font-weight:800;font-size:1.1rem;" id="wallet-balance-display">₹0.00</div>
+            </div>
+            <div class="pulse-dot"></div>
+          </div>
+
+          <!-- Group Selector -->
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="group-select">Select Group</label>
+            <select id="group-select" class="form-control">
+              <option value="">— Choose a group —</option>
+            </select>
+          </div>
+
+          <!-- Payment Mode -->
+          <div class="form-group" style="margin-bottom:1rem;">
+            <label class="form-label" for="payment-flow">Payment Flow</label>
+            <select id="payment-flow" class="form-control">
+              <option value="split_first">🎯 Standard Split (Receiver gets paid when everyone approves)</option>
+              <option value="pay_first">⚡ Pay Upfront (Pay full bill now, group owes you debt)</option>
+            </select>
+          </div>
+
+          <!-- Payment Method -->
+          <div class="method-selector">
+            <div class="form-label" style="margin-bottom:.6rem;">Payment Method</div>
+            <div class="method-grid">
+              <div class="method-card active" id="method-phone" onclick="selectMethod('phone')">
+                <div class="method-icon">📱</div>
+                <div class="method-name">Phone Number</div>
+                <div class="method-desc">Enter receiver's phone</div>
+              </div>
+              <div class="method-card" id="method-qr" onclick="selectMethod('qr')">
+                <div class="method-icon">📷</div>
+                <div class="method-name">QR Scanner</div>
+                <div class="method-desc">Scan receiver's QR</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Phone Input -->
+          <div id="phone-input-section" class="pay-form">
+            <div class="form-group">
+              <label class="form-label" for="receiver-phone">Receiver's Phone Number</label>
+              <div style="display:flex;gap:.5rem;">
+                <select id="receiver-country-code" class="form-control" style="flex-shrink:0;width:auto;min-width:70px;padding:.75rem .4rem;" onchange="handlePhoneInput()">
+                  <option value="+91">🇮🇳 +91</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                </select>
+                <input type="tel" id="receiver-phone" class="form-control" placeholder="10-digit phone number" pattern="[0-9]{10}" oninput="handlePhoneInput()" />
+              </div>
+            </div>
+          </div>
+
+          <!-- QR Input Section -->
+          <div id="qr-input-section" style="display:none;" class="pay-form">
+            <div class="qr-preview-area">
+              <div class="scan-container scan-corners">
+                <div class="scan-line"></div>
+                <div class="scan-icon">📷</div>
+              </div>
+              <div class="scan-status">Enter a PayNexus User ID below to simulate QR scan</div>
+              <div class="form-group" style="margin-top:1rem;text-align:left;">
+                <label class="form-label">Receiver User ID (simulated QR)</label>
+                <div style="display:flex;gap:.5rem;">
+                  <input type="text" id="receiver-qr-id" class="form-control" placeholder="Paste User ID / QR code" />
+                  <button class="btn btn-outline" onclick="lookupByQR()" style="flex-shrink:0;min-width:80px;">Scan</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Receiver Preview -->
+          <div class="receiver-preview" id="receiver-preview">
+            <div class="list-avatar" id="recv-avatar">?</div>
+            <div>
+              <div class="list-name" id="recv-name">—</div>
+              <div class="list-sub" id="recv-sub">—</div>
+            </div>
+            <span class="badge badge-accent" style="margin-left:auto;">✓ Verified</span>
+          </div>
+
+          <!-- Amount -->
+          <div class="form-group" style="margin-top:1rem;">
+            <label class="form-label" for="pay-amount">Total Amount (₹)</label>
+            <input type="number" id="pay-amount" class="form-control" placeholder="0.00" min="1" step="0.01" oninput="updateSplitPreview()" />
+          </div>
+
+          <!-- Description -->
+          <div class="form-group">
+            <label class="form-label" for="pay-desc">Description (optional)</label>
+            <input type="text" id="pay-desc" class="form-control" placeholder="e.g. Dinner bill" />
+          </div>
+
+          <!-- Split Preview -->
+          <div class="split-preview" id="split-preview">
+            <div style="font-weight:700;font-size:.85rem;color:var(--primary-light);margin-bottom:.5rem;">⚡ Split Preview</div>
+            <div id="split-rows"></div>
+          </div>
+
+          <div class="form-error" id="pay-error" style="margin-top:.5rem;"></div>
+          <button class="btn btn-primary btn-full" id="btn-pay" style="margin-top:1rem;" onclick="initiatePayment()">⚡ Initiate Split Payment</button>
+        </div>
+
+        <!-- Right: Info Panel -->
+        <div class="card fade-in fade-in-delay-1">
+          <div style="font-weight:700;font-size:1rem;margin-bottom:1rem;">How It Works</div>
+          <div style="display:flex;flex-direction:column;gap:1rem;">
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-avatar" style="background:linear-gradient(135deg,#7c3aed,#6d28d9);">1</div>
+                <div><div class="list-name">Select Your Group</div><div class="list-sub">All accepted members will split the bill</div></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-avatar" style="background:linear-gradient(135deg,#3b82f6,#2563eb);">2</div>
+                <div><div class="list-name">Choose Payment Method</div><div class="list-sub">Phone number or QR scanner</div></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-avatar" style="background:linear-gradient(135deg,#10b981,#059669);">3</div>
+                <div><div class="list-name">Enter Amount</div><div class="list-sub">Automatically divided equally</div></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-avatar" style="background:linear-gradient(135deg,#f59e0b,#d97706);">4</div>
+                <div><div class="list-name">Everyone Approves</div><div class="list-sub">Each member approves their share</div></div>
+              </div>
+            </div>
+            <div class="list-item">
+              <div class="list-item-left">
+                <div class="list-avatar" style="background:linear-gradient(135deg,#ef4444,#dc2626);">5</div>
+                <div><div class="list-name">Payment Complete</div><div class="list-sub">Receiver gets credited once all approve</div></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="divider" style="margin:1.5rem 0;"></div>
+          <div id="group-members-panel">
+            <div style="font-weight:700;font-size:.85rem;color:var(--text-400);margin-bottom:.75rem;">SELECT A GROUP TO SEE MEMBERS</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/pay.js"></script>
+</body>
+</html>

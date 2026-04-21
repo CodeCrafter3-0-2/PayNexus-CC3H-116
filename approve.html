@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Approve Payments</title>
+  <meta name="description" content="Approve or reject your pending split payment charges." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .main-content { padding: 1.5rem 0 4rem; }
+    .approve-card {
+      margin-bottom: 1rem;
+      border: 1px solid var(--glass-border);
+      background: var(--glass);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      transition: var(--transition);
+    }
+    .approve-card:hover { border-color: rgba(255,255,255,0.14); }
+    .approve-card-header {
+      padding: 1.25rem 1.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 1rem; border-bottom: 1px solid var(--glass-border);
+    }
+    .approve-card-body { padding: 1.25rem 1.5rem; }
+    .approve-amount { font-size: 2rem; font-weight: 900; letter-spacing: -0.03em; }
+    .approve-actions { display: flex; gap: .75rem; margin-top: 1rem; }
+    .split-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .75rem; margin-bottom: 1rem; }
+    .split-info-item { background: rgba(255,255,255,0.03); border-radius: var(--radius-sm); padding: .6rem .9rem; }
+    .split-info-label { font-size: .7rem; color: var(--text-400); text-transform: uppercase; letter-spacing: .08em; font-weight: 600; }
+    .split-info-value { font-size: .95rem; font-weight: 700; margin-top: .15rem; }
+    .members-split { display: flex; flex-direction: column; gap: .4rem; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs"><div class="orb orb-1"></div><div class="orb orb-2"></div><div class="orb orb-3"></div></div>
+  <div class="page-wrapper">
+    <nav class="navbar">
+      <a href="index.html" class="nav-logo"><div class="logo-icon">💸</div><span class="logo-text">PayNexus</span></a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="groups.html" class="nav-link">Groups</a>
+        <a href="pay.html" class="nav-link" id="nav-pay">Pay</a>
+        <a href="approve.html" class="nav-link active">Approvals</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+      </div>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <button class="btn-logout" id="btn-logout">Logout</button>
+      </div>
+    </nav>
+
+    <div class="container main-content">
+      <div class="page-header">
+        <h1 class="section-title">✅ Payment Approvals</h1>
+        <p class="section-sub">Review and approve your pending split charges</p>
+      </div>
+
+      <div class="tab-bar" style="max-width:400px;">
+        <button class="tab-btn active" id="tab-pending" onclick="switchTab('pending')">⏳ Pending</button>
+        <button class="tab-btn" id="tab-approved" onclick="switchTab('approved')">✅ Approved</button>
+        <button class="tab-btn" id="tab-all-tx" onclick="switchTab('all')">📋 All Transactions</button>
+      </div>
+
+      <div id="tab-pending-content">
+        <div id="pending-list">
+          <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
+        </div>
+      </div>
+
+      <div id="tab-approved-content" style="display:none;">
+        <div id="approved-list">
+          <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
+        </div>
+      </div>
+
+      <div id="tab-all-content" style="display:none;">
+        <div id="all-tx-list">
+          <div class="empty-state"><div class="spinner"></div><p>Loading...</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/approve.js"></script>
+</body>
+</html>

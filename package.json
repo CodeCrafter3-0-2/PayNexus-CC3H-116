@@ -1,0 +1,9 @@
+{
+  "name": "paynexus",
+  "version": "1.0.0",
+  "description": "PayNexus Payment App",
+  "main": "index.html",
+  "dependencies": {
+    "nodemailer": "^6.9.7"
+  }
+}

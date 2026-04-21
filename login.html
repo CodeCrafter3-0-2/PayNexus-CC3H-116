@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Login / Sign Up</title>
+  <meta name="description" content="Sign in or create your PayNexus account to start splitting payments." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="page-wrapper">
+    <div class="auth-page">
+      <div class="auth-card fade-in">
+        <div class="auth-logo">
+          <div class="logo-icon-large"><i data-lucide="banknote"></i></div>
+          <div class="auth-title" id="auth-title">Welcome Back</div>
+          <div class="auth-sub" id="auth-sub">Sign in to your PayNexus account</div>
+        </div>
+
+        <!-- Login Form -->
+        <div id="login-form">
+          <form class="auth-form" id="form-login">
+            <div class="form-group">
+              <label class="form-label" for="login-email">Email Address</label>
+              <input type="email" id="login-email" class="form-control" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <div style="display:flex;justify-content:space-between;align-items:center;">
+                <label class="form-label" for="login-password">Password</label>
+                <span class="forgot-password-link" id="link-forgot">Forgot?</span>
+              </div>
+              <input type="password" id="login-password" class="form-control" placeholder="••••••••" required />
+            </div>
+            <div class="form-error" id="login-error"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="btn-login">Sign In</button>
+          </form>
+          <div class="auth-switch">Don't have an account? <a href="#" id="switch-to-signup">Create one</a></div>
+        </div>
+
+        <!-- Forgot Form -->
+        <div id="forgot-form" style="display:none;">
+          <form class="auth-form" id="form-forgot">
+            <div class="form-group">
+              <label class="form-label" for="forgot-email">Recovery Email</label>
+              <input type="email" id="forgot-email" class="form-control" placeholder="you@example.com" required />
+            </div>
+            <div class="form-error" id="forgot-error"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="btn-forgot">Send Reset Link</button>
+          </form>
+          <div class="auth-switch"><a href="#" id="back-to-login">Back to Sign In</a></div>
+        </div>
+
+        <!-- Signup Form -->
+        <div id="signup-form" style="display:none;">
+          <form class="auth-form" id="form-signup">
+            <div class="form-group">
+              <label class="form-label" for="signup-name">Full Name</label>
+              <input type="text" id="signup-name" class="form-control" placeholder="John Doe" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-email">Email Address</label>
+              <input type="email" id="signup-email" class="form-control" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-phone">Phone Number (10 digits)</label>
+              <div style="display:flex;gap:.5rem;">
+                <select id="signup-country" class="form-control" style="flex-shrink:0;width:auto;min-width:70px;padding:.75rem .4rem;">
+                  <option value="+91">🇮🇳 +91</option>
+                  <option value="+1">🇺🇸 +1</option>
+                  <option value="+44">🇬🇧 +44</option>
+                </select>
+                <input type="tel" id="signup-phone" class="form-control" placeholder="9876543210" required pattern="[0-9]{10}" />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label" for="signup-password">Password</label>
+              <input type="password" id="signup-password" class="form-control" placeholder="Min. 6 characters" required minlength="6" oninput="checkStrength(this.value)" />
+              <div class="password-strength-meter" id="strength-meter">
+                <div class="strength-segment" id="seg-1"></div>
+                <div class="strength-segment" id="seg-2"></div>
+                <div class="strength-segment" id="seg-3"></div>
+              </div>
+              <span class="strength-text" id="strength-label">Security: Too short</span>
+            </div>
+            <div class="form-error" id="signup-error"></div>
+            <button type="submit" class="btn btn-primary btn-full" id="btn-signup">Create Account</button>
+          </form>
+          <div class="auth-switch">Already have an account? <a href="#" id="switch-to-login">Sign in</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/auth.js"></script>
+</body>
+</html>

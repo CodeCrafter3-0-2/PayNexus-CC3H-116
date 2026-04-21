@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Dashboard</title>
+  <meta name="description" content="Your PayNexus dashboard — wallet, groups, and pending approvals." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .main-content { padding: 1.5rem 0 4rem; }
+    .wallet-hero {
+      background: linear-gradient(135deg, rgba(124,58,237,0.2), rgba(16,185,129,0.15));
+      border: 1.5px solid rgba(124,58,237,0.3);
+      border-radius: var(--radius-xl);
+      padding: 2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 2rem; margin-bottom: 1.5rem;
+      box-shadow: var(--shadow-glow-primary);
+      position: relative; overflow: hidden;
+    }
+    .wallet-hero::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(ellipse at top right, rgba(124,58,237,0.1) 0%, transparent 60%);
+      pointer-events: none;
+    }
+    .wallet-label { font-size: 0.8rem; font-weight: 600; color: var(--text-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.5rem; }
+    .wallet-amount { font-size: 3rem; font-weight: 900; letter-spacing: -0.04em; background: linear-gradient(90deg, #fff, var(--accent-light)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .wallet-currency { font-size: 1.5rem; }
+    .wallet-actions { display: flex; gap: 0.75rem; flex-wrap: wrap; }
+    .quick-pay-section { margin-bottom: 1.5rem; }
+    .sections-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+    @media (max-width: 768px) { .sections-grid { grid-template-columns: 1fr; } .wallet-hero { flex-direction: column; text-align: center; } .wallet-actions { justify-content: center; } }
+    .approval-item { background: rgba(245,158,11,0.06); border-color: rgba(245,158,11,0.2) !important; }
+    .approval-item:hover { background: rgba(245,158,11,0.1) !important; }
+    .tx-amount-pos { font-weight: 700; color: var(--accent-light); }
+    .tx-amount-neg { font-weight: 700; color: var(--danger-light); }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-header .section-title { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="page-wrapper">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">💸</div>
+        <span class="logo-text">PayNexus</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link active" id="nav-dashboard">Dashboard</a>
+        <a href="groups.html" class="nav-link" id="nav-groups">Groups</a>
+        <a href="pay.html" class="nav-link" id="nav-pay">Pay</a>
+        <a href="approve.html" class="nav-link" id="nav-approve">Approvals</a>
+        <a href="analytics.html" class="nav-link" id="nav-analytics">Analytics</a>
+        <a href="receiver.html" class="nav-link" id="nav-receiver" style="display:none;">My Profile</a>
+      </div>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <button class="btn-logout" id="btn-logout">Logout</button>
+      </div>
+    </nav>
+
+    <div class="container main-content">
+      <!-- Wallet Hero -->
+      <div class="wallet-hero fade-in">
+        <div>
+          <div class="wallet-label">💼 Wallet Balance</div>
+          <div class="wallet-amount"><span class="wallet-currency">₹</span><span id="wallet-balance">0.00</span></div>
+          <div style="font-size:0.8rem;color:var(--text-400);margin-top:.4rem;">Dummy money · <span id="user-role-badge" class="badge"></span></div>
+        </div>
+        <div class="wallet-actions">
+          <a href="pay.html" class="btn btn-accent" id="dash-pay-btn">⚡ Make Payment</a>
+          <a href="approve.html" class="btn btn-outline" id="dash-approve-btn">✅ Approvals <span id="pending-count-badge" class="badge badge-warning" style="display:none"></span></a>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="stat-grid fade-in fade-in-delay-1" style="margin-bottom:1.5rem;">
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">My Groups</div>
+          <div class="stat-value purple" id="stat-groups">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">💸</div>
+          <div class="stat-label">Payments Made</div>
+          <div class="stat-value green" id="stat-payments">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-label">Pending Splits</div>
+          <div class="stat-value" style="color:var(--warning)" id="stat-pending">0</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📬</div>
+          <div class="stat-label">Group Invites</div>
+          <div class="stat-value" style="color:var(--primary-light)" id="stat-invites">0</div>
+        </div>
+      </div>
+
+      <!-- Sections Grid -->
+      <div class="sections-grid fade-in fade-in-delay-2">
+        <!-- Pending Approvals -->
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">⏳ Pending Splits</div>
+            <a href="approve.html" class="btn btn-sm btn-outline">View All</a>
+          </div>
+          <div id="pending-splits-list">
+            <div class="empty-state"><div class="empty-icon">🎉</div><p>No pending split approvals</p></div>
+          </div>
+        </div>
+
+        <!-- Group Invites -->
+        <div class="card">
+          <div class="section-header">
+            <div class="section-title">📬 Group Invites</div>
+            <a href="groups.html" class="btn btn-sm btn-outline">Manage</a>
+          </div>
+          <div id="invites-list">
+            <div class="empty-state"><div class="empty-icon">👥</div><p>No pending invites</p></div>
+          </div>
+        </div>
+
+        <!-- Recent Transactions -->
+        <div class="card" style="grid-column: 1 / -1;">
+          <div class="section-header">
+            <div class="section-title">📋 Recent Transactions</div>
+            <button class="btn btn-sm btn-outline" onclick="openModal('modal-statement')">📊 View Statement</button>
+          </div>
+          <div id="recent-tx-list">
+            <div class="empty-state"><div class="empty-icon">💳</div><p>No transactions yet</p></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Statement Modal -->
+  <div class="modal-overlay" id="modal-statement">
+    <div class="modal">
+      <div class="modal-header">
+        <div class="modal-title">📊 Transaction Statement</div>
+        <button class="btn-close" onclick="closeModal('modal-statement')">&times;</button>
+      </div>
+
+      <div class="statement-filters" style="margin-bottom: 1.5rem;">
+        <div class="tab-bar" style="margin-bottom: 1rem;">
+          <button class="tab-btn active" id="btn-quick-1d" onclick="setQuickRange('1d')">Last 24h</button>
+          <button class="tab-btn" id="btn-quick-range" onclick="setQuickRange('custom')">Custom Range</button>
+        </div>
+
+        <div id="custom-range-inputs" style="display:none; gap:0.75rem; margin-top:0.5rem;">
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">From</label>
+            <input type="date" id="stmt-start" class="form-control" />
+          </div>
+          <div class="form-group" style="flex:1;">
+            <label class="form-label">To</label>
+            <input type="date" id="stmt-end" class="form-control" />
+          </div>
+        </div>
+
+        <button class="btn btn-primary btn-full" style="margin-top:1rem;" onclick="generateStatement()">🔄 Generate Statement</button>
+      </div>
+
+      <div id="statement-results" style="max-height: 400px; overflow-y: auto; padding-right: 0.5rem;">
+        <div class="empty-state"><p>Select range and click generate</p></div>
+      </div>
+
+      <div id="statement-summary" class="card" style="margin-top: 1rem; padding: 1rem; display: none;">
+        <div style="display:flex; justify-content: space-between; font-size: 0.85rem;">
+          <div><span style="color:var(--text-400)">Money In:</span> <span id="stmt-total-in" class="tx-amount-pos">₹0</span></div>
+          <div><span style="color:var(--text-400)">Money Out:</span> <span id="stmt-total-out" class="tx-amount-neg">₹0</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>

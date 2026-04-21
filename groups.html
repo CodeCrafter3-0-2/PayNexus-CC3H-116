@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Groups</title>
+  <meta name="description" content="Manage your payment groups — create groups, invite friends, and track members." />
+  <link rel="stylesheet" href="css/style.css" />
+  <style>
+    .main-content { padding: 1.5rem 0 4rem; }
+    .groups-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 1.25rem; }
+    @media (max-width: 900px) { .groups-layout { grid-template-columns: 1fr; } }
+    .group-card-item {
+      cursor: pointer; transition: var(--transition);
+      margin-bottom: 0.75rem; border-radius: var(--radius-md);
+      padding: 1rem 1.2rem;
+      background: var(--glass); border: 1px solid var(--glass-border);
+    }
+    .group-card-item:hover, .group-card-item.selected { border-color: var(--primary); background: rgba(124,58,237,0.08); }
+    .group-card-item.selected { box-shadow: 0 0 0 2px var(--primary-glow); }
+    .member-list { display: flex; flex-direction: column; gap: 0.5rem; }
+    .section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .section-header .section-title { margin-bottom: 0; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="page-wrapper">
+    <nav class="navbar">
+      <a href="index.html" class="nav-logo"><div class="logo-icon">💸</div><span class="logo-text">PayNexus</span></a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link">Dashboard</a>
+        <a href="groups.html" class="nav-link active">Groups</a>
+        <a href="pay.html" class="nav-link" id="nav-pay">Pay</a>
+        <a href="approve.html" class="nav-link">Approvals</a>
+        <a href="analytics.html" class="nav-link">Analytics</a>
+      </div>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <button class="btn-logout" id="btn-logout">Logout</button>
+      </div>
+    </nav>
+
+    <div class="container main-content">
+      <div class="page-header">
+        <h1 class="section-title">👥 My Groups</h1>
+        <p class="section-sub">Create payment groups and manage your members</p>
+      </div>
+
+      <div class="groups-layout">
+        <!-- Left: Groups List -->
+        <div>
+          <div class="section-header">
+            <span style="font-weight:700;font-size:.95rem;">Groups</span>
+            <button class="btn btn-primary btn-sm" id="btn-create-group" style="display:none;">+ New Group</button>
+          </div>
+
+          <!-- Pending Invites section -->
+          <div class="card" style="margin-bottom:1rem;" id="invites-section">
+            <div style="font-weight:700;font-size:.9rem;margin-bottom:.75rem;color:var(--warning);">📬 Pending Invites</div>
+            <div id="invites-container"><div class="empty-state" style="padding:1rem;"><p>No pending invites</p></div></div>
+          </div>
+
+          <div id="groups-container">
+            <div class="empty-state"><div class="empty-icon">👥</div><p>No groups yet. Create one!</p></div>
+          </div>
+        </div>
+
+        <!-- Right: Group Detail -->
+        <div class="card" id="group-detail-panel" style="min-height:300px;">
+          <div class="empty-state">
+            <div class="empty-icon">👈</div>
+            <p>Select a group to see details</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Group Modal -->
+  <div class="modal-overlay" id="modal-create-group">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">✨ Create New Group</span>
+        <button class="btn-close" onclick="closeModal('modal-create-group')">×</button>
+      </div>
+      <form id="form-create-group">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="group-name">Group Name</label>
+          <input type="text" id="group-name" class="form-control" placeholder="e.g. Weekend Trip" required />
+        </div>
+        <div class="form-error" id="create-group-error"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-submit-group">Create Group</button>
+      </form>
+    </div>
+  </div>
+
+  <!-- Invite Member Modal -->
+  <div class="modal-overlay" id="modal-invite">
+    <div class="modal">
+      <div class="modal-header">
+        <span class="modal-title">📧 Invite Member</span>
+        <button class="btn-close" onclick="closeModal('modal-invite')">×</button>
+      </div>
+      <form id="form-invite">
+        <div class="form-group" style="margin-bottom:1rem;">
+          <label class="form-label" for="invite-email">Member's Email</label>
+          <input type="email" id="invite-email" class="form-control" placeholder="friend@example.com" required />
+        </div>
+        <div class="form-error" id="invite-error"></div>
+        <button type="submit" class="btn btn-primary btn-full" id="btn-submit-invite">Send Invite</button>
+      </form>
+    </div>
+  </div>
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/groups.js"></script>
+</body>
+</html>

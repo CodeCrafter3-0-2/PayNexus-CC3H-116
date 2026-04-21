@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PayNexus — Analytics</title>
+  <meta name="description" content="Real-time financial analytics and spending insights for your PayNexus account." />
+  <link rel="stylesheet" href="css/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <style>
+    /* ── Analytics Layout ── */
+    .analytics-content { padding: 1.5rem 0 5rem; }
+
+    /* Live Indicator */
+    .live-badge {
+      display: inline-flex; align-items: center; gap: 0.4rem;
+      background: rgba(16,185,129,0.12); border: 1px solid rgba(16,185,129,0.3);
+      border-radius: var(--radius-full); padding: 0.3rem 0.85rem;
+      font-size: 0.72rem; font-weight: 700; color: var(--accent-light);
+      letter-spacing: 0.06em; text-transform: uppercase;
+    }
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--accent);
+      box-shadow: 0 0 6px var(--accent); animation: pulse 1.8s infinite;
+    }
+
+    /* Page Header */
+    .analytics-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem;
+    }
+    .analytics-header-left h1 {
+      font-size: 1.8rem; font-weight: 900; letter-spacing: -0.03em;
+      background: linear-gradient(90deg, var(--text-100), var(--primary-light));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      margin-bottom: 0.25rem;
+    }
+    .analytics-header-left p { font-size: 0.85rem; color: var(--text-400); }
+
+    /* Time Range Tabs */
+    .range-tabs {
+      display: flex; gap: 0.3rem; background: var(--glass);
+      border: 1px solid var(--glass-border); border-radius: var(--radius-full);
+      padding: 0.3rem;
+    }
+    .range-tab {
+      padding: 0.45rem 1rem; border-radius: var(--radius-full);
+      font-size: 0.8rem; font-weight: 600; color: var(--text-400);
+      background: transparent; transition: var(--transition); cursor: pointer; border: none;
+    }
+    .range-tab.active {
+      background: linear-gradient(135deg, var(--primary), #6d28d9);
+      color: white; box-shadow: 0 2px 10px var(--primary-glow);
+    }
+    .range-tab:hover:not(.active) { color: var(--text-100); background: rgba(255,255,255,0.05); }
+
+    /* KPI Row */
+    .kpi-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem; margin-bottom: 1.5rem;
+    }
+    .kpi-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg); padding: 1.4rem 1.6rem;
+      backdrop-filter: blur(12px); transition: var(--transition);
+      position: relative; overflow: hidden;
+    }
+    .kpi-card::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px; border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+      opacity: 0; transition: var(--transition);
+    }
+    .kpi-card.kpi-purple::after { background: linear-gradient(90deg, var(--primary), var(--primary-light)); }
+    .kpi-card.kpi-green::after  { background: linear-gradient(90deg, var(--accent), var(--accent-light)); }
+    .kpi-card.kpi-red::after    { background: linear-gradient(90deg, var(--danger), #f87171); }
+    .kpi-card.kpi-amber::after  { background: linear-gradient(90deg, var(--warning), #fcd34d); }
+    .kpi-card:hover { transform: translateY(-3px); border-color: rgba(255,255,255,0.14); }
+    .kpi-card:hover::after { opacity: 1; }
+    .kpi-label { font-size: 0.72rem; font-weight: 700; color: var(--text-400); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 0.6rem; display: flex; align-items: center; gap: 0.4rem; }
+    .kpi-value { font-size: 2rem; font-weight: 900; letter-spacing: -0.04em; line-height: 1; }
+    .kpi-value.purple { background: linear-gradient(90deg, var(--primary-light), #c4b5fd); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .kpi-value.green  { background: linear-gradient(90deg, var(--accent-light), #6ee7b7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .kpi-value.red    { background: linear-gradient(90deg, var(--danger-light), #f87171);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .kpi-value.amber  { background: linear-gradient(90deg, #fbbf24, #fcd34d); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .kpi-delta {
+      display: inline-flex; align-items: center; gap: 0.2rem;
+      font-size: 0.72rem; font-weight: 600; margin-top: 0.4rem;
+      padding: 0.15rem 0.5rem; border-radius: var(--radius-full);
+    }
+    .kpi-delta.up   { background: rgba(16,185,129,0.15); color: var(--accent-light); }
+    .kpi-delta.down { background: rgba(239,68,68,0.15);  color: var(--danger-light); }
+    .kpi-delta.neu  { background: rgba(148,163,184,0.1); color: var(--text-400); }
+
+    /* Chart Cards */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr;
+      gap: 1.25rem; margin-bottom: 1.25rem;
+    }
+    .charts-grid-bottom {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.25rem; margin-bottom: 1.25rem;
+    }
+    @media (max-width: 900px) {
+      .charts-grid { grid-template-columns: 1fr; }
+      .charts-grid-bottom { grid-template-columns: 1fr; }
+    }
+    .chart-card {
+      background: var(--glass); border: 1px solid var(--glass-border);
+      border-radius: var(--radius-lg); padding: 1.5rem;
+      backdrop-filter: blur(12px);
+    }
+    .chart-card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 1.25rem; gap: 0.5rem; flex-wrap: wrap;
+    }
+    .chart-card-title {
+      font-size: 0.9rem; font-weight: 700; color: var(--text-100);
+    }
+    .chart-card-sub { font-size: 0.72rem; color: var(--text-400); margin-top: 0.15rem; }
+    .chart-wrap { position: relative; height: 220px; }
+    .chart-wrap-sm { position: relative; height: 180px; }
+
+    /* Activity Feed */
+    .activity-feed-wrap { max-height: 340px; overflow-y: auto; padding-right: 0.25rem; }
+    .activity-item {
+      display: flex; align-items: flex-start; gap: 0.85rem;
+      padding: 0.75rem 0; border-bottom: 1px solid rgba(255,255,255,0.04);
+      transition: var(--transition);
+    }
+    .activity-item:last-child { border-bottom: none; }
+    .activity-item:hover { background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); padding-left: 0.4rem; }
+    .activity-icon {
+      width: 34px; height: 34px; border-radius: 50%; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+    }
+    .activity-icon.send    { background: rgba(239,68,68,0.18); }
+    .activity-icon.receive { background: rgba(16,185,129,0.18); }
+    .activity-icon.split   { background: rgba(245,158,11,0.18); }
+    .activity-icon.group   { background: rgba(124,58,237,0.18); }
+    .activity-body { flex: 1; min-width: 0; }
+    .activity-title { font-size: 0.82rem; font-weight: 600; color: var(--text-100); }
+    .activity-time  { font-size: 0.7rem; color: var(--text-400); margin-top: 0.15rem; }
+    .activity-amount { font-size: 0.85rem; font-weight: 700; flex-shrink: 0; }
+    .activity-amount.pos { color: var(--accent-light); }
+    .activity-amount.neg { color: var(--danger-light); }
+
+    /* Spending breakdown donut legend */
+    .donut-legend { display: flex; flex-direction: column; gap: 0.55rem; margin-top: 0.75rem; }
+    .legend-item { display: flex; align-items: center; gap: 0.6rem; font-size: 0.78rem; }
+    .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .legend-label { flex: 1; color: var(--text-200); }
+    .legend-pct { font-weight: 700; color: var(--text-100); }
+
+    /* Heatmap */
+    .heatmap-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px; margin-top: 0.5rem;
+    }
+    .hmap-day {
+      aspect-ratio: 1; border-radius: 4px;
+      background: rgba(255,255,255,0.04);
+      transition: var(--transition); cursor: default;
+    }
+    .hmap-day:hover { transform: scale(1.15); }
+    .hmap-day.l0 { background: rgba(255,255,255,0.04); }
+    .hmap-day.l1 { background: rgba(16,185,129,0.2); }
+    .hmap-day.l2 { background: rgba(16,185,129,0.4); }
+    .hmap-day.l3 { background: rgba(16,185,129,0.65); }
+    .hmap-day.l4 { background: rgba(16,185,129,0.9); }
+    .hmap-labels { display: flex; justify-content: space-between; font-size: 0.65rem; color: var(--text-400); margin-bottom: 0.25rem; }
+
+    /* Skeleton loader */
+    @keyframes shimmer {
+      0% { background-position: -400px 0; }
+      100% { background-position: 400px 0; }
+    }
+    .skeleton {
+      background: linear-gradient(90deg, rgba(255,255,255,0.04) 25%, rgba(255,255,255,0.08) 50%, rgba(255,255,255,0.04) 75%);
+      background-size: 800px 100%;
+      animation: shimmer 1.6s infinite;
+      border-radius: var(--radius-sm);
+    }
+
+    /* Refresh btn */
+    #btn-refresh {
+      display: flex; align-items: center; gap: 0.4rem;
+      padding: 0.45rem 1rem;
+    }
+    #btn-refresh svg { transition: transform 0.5s; }
+    #btn-refresh.spinning svg { transform: rotate(360deg); }
+
+    /* No-data overlay */
+    .chart-empty {
+      position: absolute; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; color: var(--text-400);
+      font-size: 0.85rem; gap: 0.5rem; background: rgba(3,7,18,0.3);
+      border-radius: var(--radius-md);
+    }
+    .chart-empty .ci { font-size: 2rem; opacity: 0.4; }
+  </style>
+</head>
+<body>
+  <div class="bg-orbs">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+  <div class="page-wrapper">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="index.html" class="nav-logo">
+        <div class="logo-icon">💸</div>
+        <span class="logo-text">PayNexus</span>
+      </a>
+      <div class="nav-links">
+        <a href="dashboard.html" class="nav-link" id="nav-dashboard">Dashboard</a>
+        <a href="groups.html"    class="nav-link" id="nav-groups">Groups</a>
+        <a href="pay.html"       class="nav-link" id="nav-pay">Pay</a>
+        <a href="approve.html"   class="nav-link" id="nav-approve">Approvals</a>
+        <a href="analytics.html" class="nav-link active" id="nav-analytics">Analytics</a>
+      </div>
+      <div class="nav-user">
+        <div class="nav-avatar" id="nav-avatar">?</div>
+        <button class="btn-logout" id="btn-logout">Logout</button>
+      </div>
+    </nav>
+
+    <div class="container analytics-content">
+      <!-- Header -->
+      <div class="analytics-header fade-in">
+        <div class="analytics-header-left">
+          <h1>📊 Analytics</h1>
+          <p>Real-time insights into your financial activity &mdash; <span id="last-updated">Loading...</span></p>
+        </div>
+        <div style="display:flex; align-items:center; gap:0.75rem; flex-wrap:wrap;">
+          <div class="live-badge"><div class="live-dot"></div> LIVE</div>
+          <div class="range-tabs">
+            <button class="range-tab active" data-range="7"  onclick="setRange(7)">7D</button>
+            <button class="range-tab"        data-range="30" onclick="setRange(30)">30D</button>
+            <button class="range-tab"        data-range="90" onclick="setRange(90)">90D</button>
+          </div>
+          <button class="btn btn-outline btn-sm" id="btn-refresh" onclick="refreshAll()">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/>
+              <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/>
+            </svg>
+            Refresh
+          </button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="kpi-grid fade-in fade-in-delay-1">
+        <div class="kpi-card kpi-green">
+          <div class="kpi-label">💰 Money Received</div>
+          <div class="kpi-value green" id="kpi-received">—</div>
+          <div class="kpi-delta neu" id="kpi-received-delta">Calculating…</div>
+        </div>
+        <div class="kpi-card kpi-red">
+          <div class="kpi-label">💸 Money Sent</div>
+          <div class="kpi-value red" id="kpi-sent">—</div>
+          <div class="kpi-delta neu" id="kpi-sent-delta">Calculating…</div>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-label">🔄 Transactions</div>
+          <div class="kpi-value purple" id="kpi-txcount">—</div>
+          <div class="kpi-delta neu" id="kpi-txcount-delta">Calculating…</div>
+        </div>
+        <div class="kpi-card kpi-amber">
+          <div class="kpi-label">⚖️ Net Balance</div>
+          <div class="kpi-value amber" id="kpi-net">—</div>
+          <div class="kpi-delta neu" id="kpi-net-delta">in period</div>
+        </div>
+        <div class="kpi-card kpi-purple">
+          <div class="kpi-label">⏳ Pending Splits</div>
+          <div class="kpi-value purple" id="kpi-pending">—</div>
+          <div class="kpi-delta neu" id="kpi-pending-amt">Loading…</div>
+        </div>
+      </div>
+
+      <!-- Charts Row 1 -->
+      <div class="charts-grid fade-in fade-in-delay-2">
+        <!-- Transaction Volume Trend -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">📈 Transaction Volume</div>
+              <div class="chart-card-sub">Daily sent &amp; received amounts</div>
+            </div>
+            <div class="live-badge" style="font-size:0.65rem; padding:0.2rem 0.6rem;">
+              <div class="live-dot"></div> LIVE
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-volume"></canvas>
+            <div class="chart-empty" id="empty-volume" style="display:none;">
+              <div class="ci">📉</div>No transaction data yet
+            </div>
+          </div>
+        </div>
+
+        <!-- Spending Breakdown Donut -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">🍩 Payment Methods</div>
+              <div class="chart-card-sub">Split by method type</div>
+            </div>
+          </div>
+          <div class="chart-wrap-sm">
+            <canvas id="chart-methods"></canvas>
+            <div class="chart-empty" id="empty-methods" style="display:none;">
+              <div class="ci">🔍</div>No data yet
+            </div>
+          </div>
+          <div class="donut-legend" id="methods-legend"></div>
+        </div>
+      </div>
+
+      <!-- Charts Row 2 -->
+      <div class="charts-grid-bottom fade-in fade-in-delay-3">
+        <!-- Cumulative Balance Chart -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">💹 Cumulative Cash Flow</div>
+              <div class="chart-card-sub">Running net balance over period</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-cumulative"></canvas>
+            <div class="chart-empty" id="empty-cumulative" style="display:none;">
+              <div class="ci">📊</div>No data yet
+            </div>
+          </div>
+        </div>
+
+        <!-- Activity Heatmap -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">🗓️ Activity Heatmap</div>
+              <div class="chart-card-sub">Transaction frequency (last 28 days)</div>
+            </div>
+          </div>
+          <div class="hmap-labels">
+            <span>Mon</span><span>Tue</span><span>Wed</span>
+            <span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+          </div>
+          <div class="heatmap-grid" id="heatmap-grid"></div>
+          <div style="display:flex; align-items:center; gap:0.4rem; margin-top:0.75rem; font-size:0.65rem; color:var(--text-400);">
+            Less
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(255,255,255,0.04);"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(16,185,129,0.25);"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(16,185,129,0.5);"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(16,185,129,0.75);"></div>
+            <div style="width:10px;height:10px;border-radius:2px;background:rgba(16,185,129,0.95);"></div>
+            More
+          </div>
+        </div>
+      </div>
+
+      <!-- Bottom Row: Hourly + Activity Feed -->
+      <div class="charts-grid fade-in" style="animation-delay:0.35s;">
+        <!-- Hourly pattern bar chart -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">🕐 Hourly Activity Pattern</div>
+              <div class="chart-card-sub">When you transact most</div>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <canvas id="chart-hourly"></canvas>
+            <div class="chart-empty" id="empty-hourly" style="display:none;">
+              <div class="ci">🕰️</div>No data yet
+            </div>
+          </div>
+        </div>
+
+        <!-- Live Activity Feed -->
+        <div class="chart-card">
+          <div class="chart-card-header">
+            <div>
+              <div class="chart-card-title">⚡ Live Activity Feed</div>
+              <div class="chart-card-sub">Real-time transaction stream</div>
+            </div>
+            <div class="live-badge" style="font-size:0.65rem; padding:0.2rem 0.6rem;">
+              <div class="live-dot"></div> LIVE
+            </div>
+          </div>
+          <div class="activity-feed-wrap" id="activity-feed">
+            <div class="empty-state" style="padding:2rem 0;">
+              <div class="empty-icon">⚡</div>
+              <p>Waiting for live events…</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /container -->
+  </div><!-- /page-wrapper -->
+
+  <div id="toast-container"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabase.js"></script>
+  <script src="js/analytics.js"></script>
+</body>
+</html>
